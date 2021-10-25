@@ -11,7 +11,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="ColorFisher.fs" />
-    <Compile Include="CV.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
