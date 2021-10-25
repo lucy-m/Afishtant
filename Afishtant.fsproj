@@ -10,12 +10,18 @@
     <Content Include="fishhook.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="PlaySound.fs" />
     <Compile Include="ColorFisher.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Windows.Extensions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Interceptor\Interceptor\Interceptor.csproj" />
   </ItemGroup>
 
 </Project>

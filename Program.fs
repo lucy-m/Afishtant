@@ -3,13 +3,20 @@
 open System
 open System.Threading
 open System.Diagnostics
+open Interceptor
 
 [<EntryPoint>]
 let main argv =
 
+    let input = new Input()
+    input.KeyboardFilterMode <- KeyboardFilterMode.All
+    input.Load() |> ignore
+
     while true do
         let res = ColorFisher.findFish()
-        let hasFish = res > 0.9
+        let hasFish = res > 0.98
+        if hasFish
+        then
+            input.SendLeftClick()
         printfn "There is a fish - %f %b" res hasFish
-        Thread.Sleep(50)
-    0 // return an integer exit code
+    0
