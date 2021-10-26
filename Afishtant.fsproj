@@ -11,6 +11,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="PlaySound.fs" />
+    <Compile Include="Color.fs" />
+    <Compile Include="AutoReeler.fs" />
     <Compile Include="ColorFisher.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

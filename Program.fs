@@ -13,10 +13,23 @@ let main argv =
     input.Load() |> ignore
 
     while true do
-        let res = ColorFisher.findFish()
-        let hasFish = res > 0.98
+        let hasFish = ColorFisher.findFish()
+
         if hasFish
-        then
-            input.SendLeftClick()
-        printfn "There is a fish - %f %b" res hasFish
+        then input.SendLeftClick()
+
+        let autoReelerVal = AutoReeler.tryReel()
+
+        match autoReelerVal with
+        | Option.Some AutoReeler.MouseUp -> input.SendMouseEvent(MouseState.LeftUp)
+        | Option.Some AutoReeler.MouseDown -> input.SendMouseEvent(MouseState.LeftDown)
+        | _ -> ()
+
+        //let autoReelerStr =
+        //    match autoReelerVal with
+        //    | Option.Some AutoReeler.MouseUp -> "Mouse up"
+        //    | Option.Some AutoReeler.MouseDown -> "Mouse down"
+        //    | _ -> "No action"
+
+        //printfn "Fish detector %f %b\t auto reeler val %s" findFishVal hasFish autoReelerStr
     0
