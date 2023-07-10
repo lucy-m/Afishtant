@@ -16,47 +16,35 @@
 
         1.0 - total / 765.0
 
-    let compare (targetColor: Model) (img: Bitmap) (diffFn: Differ): float seq seq =
+    type CompareResult =
+        {
+            value: float
+            x: int
+            y: int
+        }
+
+    let zeroResult: CompareResult = { value = 0.0; x = 0; y = 0 }
+
+    let compare (targetColor: Model) (img: Bitmap) (diffFn: Differ): CompareResult seq =
         let xMax = img.Width
         let yMax = img.Height
 
         [0 .. 3 .. xMax-1]
-        |> Seq.map (fun x ->
+        |> Seq.collect (fun x ->
             [0 .. 3 .. yMax-1]
             |> Seq.map (fun y ->
                 let px = img.GetPixel(x, y)
                 let rgb = px.R, px.G, px.B
 
-                diffFn rgb targetColor
+                { value = diffFn rgb targetColor; x = x; y = y }
             )
         )
 
-    let findMax (src: float seq seq): float =
+    let findMax (src: CompareResult seq): CompareResult =
         src
-        |> Seq.map (fun v ->
-            v |> Seq.reduce (fun acc n -> Math.Max(acc, n))
-        )
-        |> Seq.reduce (fun acc n -> Math.Max(acc, n))
+        |> Seq.reduce (fun acc n -> if n.value > acc.value then n else acc)
 
-    let findAverage (src: float seq seq): float =
+    let findAverage (src: float seq): float =
         src
-        |> Seq.collect id
         |> Seq.average
-
-    let findMatch (targetColor: Model) (img: Bitmap) (diffFn: Differ): float =
-        let xMax = img.Width
-        let yMax = img.Height
-
-        [0 .. 3 .. xMax-1]
-        |> Seq.map (fun x ->
-            [0 .. 3 .. yMax-1]
-            |> Seq.map (fun y ->
-                let px = img.GetPixel(x, y)
-                let rgb = px.R, px.G, px.B
-
-                diffFn rgb targetColor
-            )
-            |> Seq.reduce (fun acc n -> Math.Max(acc, n))
-        )
-        |> Seq.reduce (fun acc n -> Math.Max(acc, n))
 

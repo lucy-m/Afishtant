@@ -8,28 +8,61 @@ open Interceptor
 [<EntryPoint>]
 let main argv =
 
-    let input = new Input()
-    input.KeyboardFilterMode <- KeyboardFilterMode.All
+    let input =
+        new Input(
+            MouseFilterMode = MouseFilterMode.All
+        )
     input.Load() |> ignore
 
+    let fishHookSearcher =
+        let targetColor = 234uy, 175uy, 46uy
+        let readBitmap = new System.Drawing.Bitmap(563, 462)
+        let topLeft = new System.Drawing.Point(1720, 440)
+        ColorFinder.thresholdSearcher readBitmap topLeft targetColor
+
+    let fishReelSearcher =
+        let targetColor = 4uy, 252uy, 180uy
+        let readBitmap = new System.Drawing.Bitmap(563, 924)
+        let topLeft = new System.Drawing.Point(1720, 440)
+        ColorFinder.thresholdSearcher readBitmap topLeft targetColor
+
+    let mutable isReeling = false
+
+    let onMousePress (e: MousePressedEventArgs) =
+        if (e.State = MouseState.LeftDown || e.State = MouseState.RightDown) && isReeling
+        then
+            isReeling <- false
+            printfn "Reel cancelled %s" (e.State.ToString())
+    GameOverlay.run()
+
+    let stopwatch = new Stopwatch()
+
+    input.OnMousePressed.Add(onMousePress)
+
     while true do
-        let hasFish = ColorFisher.findFish()
+        stopwatch.Start()
+        let result =
+            if isReeling
+            then fishReelSearcher 0.89
+            else fishHookSearcher 0.89
 
-        if hasFish
-        then input.SendLeftClick()
+        GameOverlay.drawResult <- Option.Some result
 
-        let autoReelerVal = AutoReeler.tryReel()
+        if isReeling
+        then
+            if List.length result.results >= 3
+            then
+                input.SendMouseEvent(MouseState.LeftDown)
+                Thread.Sleep(400)
+            else
+                input.SendMouseEvent(MouseState.LeftUp)
+                Thread.Sleep(400)
+        else
+            if List.length result.results >= 7
+            then
+                printfn "Fish found! Reeling"
+                input.SendLeftClick()
+                isReeling <- true
 
-        match autoReelerVal with
-        | Option.Some AutoReeler.MouseUp -> input.SendMouseEvent(MouseState.LeftUp)
-        | Option.Some AutoReeler.MouseDown -> input.SendMouseEvent(MouseState.LeftDown)
-        | _ -> ()
-
-        //let autoReelerStr =
-        //    match autoReelerVal with
-        //    | Option.Some AutoReeler.MouseUp -> "Mouse up"
-        //    | Option.Some AutoReeler.MouseDown -> "Mouse down"
-        //    | _ -> "No action"
-
-        //printfn "Fish detector %f %b\t auto reeler val %s" findFishVal hasFish autoReelerStr
+        stopwatch.Reset()
     0

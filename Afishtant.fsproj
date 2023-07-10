@@ -12,12 +12,15 @@
     </Content>
     <Compile Include="PlaySound.fs" />
     <Compile Include="Color.fs" />
-    <Compile Include="AutoReeler.fs" />
-    <Compile Include="ColorFisher.fs" />
+    <Compile Include="Boundary.fs" />
+    <Compile Include="SearchResult.fs" />
+    <Compile Include="ColorFinder.fs" />
+    <Compile Include="GameOverlay.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GameOverlay.Net" Version="4.3.1" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
     <PackageReference Include="System.Windows.Extensions" Version="5.0.0" />
   </ItemGroup>
